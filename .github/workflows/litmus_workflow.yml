@@ -1,0 +1,51 @@
+name: litmus Workflow
+
+on: push
+
+jobs:
+  setup-cluster:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Docker
+        uses: actions/setup-docker@v2
+
+      - name: Set up Minikube
+        run: |
+          curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
+          sudo install minikube-linux-amd64 /usr/local/bin/minikube
+
+      - name: Start minikube
+        run: minikube start
+          
+
+      - name: Install helm
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+
+  run-litmus:
+    needs: setup-cluster
+    runs-on: ubuntu-latest
+    steps: 
+      - name: Add litmus Chaos Repository
+        run: helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
+
+      - name: Create litmus namespace
+        run: kubectl create ns litmus
+
+      - name: Install Litmus
+        run: |
+          helm install chaos litmuschaos/litmus \
+            --namespace=litmus \
+            --set portal.frontend.service.type=NodePort
+
+  Check-litmus-Installation:
+    needs: run-litmus
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Installation
+        run: kubectl get pods -n litmus
+
+  
+      
