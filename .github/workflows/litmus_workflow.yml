@@ -6,13 +6,12 @@ jobs:
   setup-cluster:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Docker
-        uses: docker/setup-action@v2
-
       - name: Set up Minikube
         run: |
+          sudo apt update && sudo apt install -y curl
           curl -LO https://storage.googleapis.com/minikube/releases/latest/minikube-linux-amd64
           sudo install minikube-linux-amd64 /usr/local/bin/minikube
+          minikube start
 
       - name: Start minikube
         run: minikube start
