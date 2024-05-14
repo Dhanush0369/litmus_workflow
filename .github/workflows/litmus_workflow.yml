@@ -32,7 +32,10 @@ jobs:
     steps: 
       - name: Add litmus Chaos Repository
         run: helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
-
+        
+      - name: Wait for Minikube to finish setting up
+        run: sleep 30s
+        
       - name: check minikube status
         run: minikube status
         
