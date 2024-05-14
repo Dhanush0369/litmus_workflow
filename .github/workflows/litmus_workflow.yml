@@ -30,6 +30,9 @@ jobs:
       - name: Add litmus Chaos Repository
         run: helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
 
+      - name: check minikube status
+        run: minikube status
+        
       - name: Create litmus namespace
         run: kubectl create ns litmus
 
