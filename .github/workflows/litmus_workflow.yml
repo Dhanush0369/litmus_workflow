@@ -41,6 +41,9 @@ jobs:
           helm install chaos litmuschaos/litmus \
             --namespace=litmus \
             --set portal.frontend.service.type=NodePort
+
+      - name: Wait for pods to be ready
+        run: sleep 45s
             
       - name: Check Installation
         run: kubectl get pods -n litmus
