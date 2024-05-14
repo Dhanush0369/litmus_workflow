@@ -13,10 +13,13 @@ jobs:
           sudo install minikube-linux-amd64 /usr/local/bin/minikube
           minikube start
 
+      - name: Install kubectl
+        run: |
+          sudo apt update && sudo apt install -y kubectl
+      
       - name: Start minikube
         run: minikube start
           
-
       - name: Install helm
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
