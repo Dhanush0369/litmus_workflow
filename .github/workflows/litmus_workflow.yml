@@ -3,7 +3,7 @@ name: litmus Workflow
 on: push
 
 jobs:
-  setup-cluster:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - name: Set up Minikube
@@ -17,9 +17,6 @@ jobs:
         run: |
           sudo apt update && sudo apt install -y kubectl
       
-      - name: Start minikube
-        run: minikube start
-          
       - name: Install helm
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
@@ -27,17 +24,14 @@ jobs:
           ./get_helm.sh
 
   run-litmus:
-    needs: setup-cluster
+    needs: setup
     runs-on: ubuntu-latest
     steps: 
       - name: Add litmus Chaos Repository
         run: helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
         
-      - name: Wait for Minikube to finish setting up
-        run: sleep 30s
-        
-      - name: check minikube status
-        run: minikube status
+      - name: Start minikube
+        run: minikube start
         
       - name: Create litmus namespace
         run: kubectl create ns litmus
