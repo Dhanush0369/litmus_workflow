@@ -41,13 +41,10 @@ jobs:
           helm install chaos litmuschaos/litmus \
             --namespace=litmus \
             --set portal.frontend.service.type=NodePort
-
-  Check-litmus-Installation:
-    needs: run-litmus
-    runs-on: ubuntu-latest
-    steps:
+            
       - name: Check Installation
         run: kubectl get pods -n litmus
+      
 
   
       
