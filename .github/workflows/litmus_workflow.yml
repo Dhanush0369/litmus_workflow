@@ -43,7 +43,13 @@ jobs:
             --set portal.frontend.service.type=NodePort
 
       - name: Wait for pods to be ready
-        run: sleep 60s
+        run: |
+          while true; do
+            if kubectl get pods --namespace litmus | grep -q "1/1"; then
+              break
+            fi
+            sleep 20
+          done
             
       - name: Extract Minikube IP and NodePort
         id: extract-urls
