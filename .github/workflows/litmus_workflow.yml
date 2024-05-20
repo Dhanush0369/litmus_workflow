@@ -43,11 +43,41 @@ jobs:
             --set portal.frontend.service.type=NodePort
 
       - name: Wait for pods to be ready
-        run: sleep 45s
+        run: sleep 60s
             
-      - name: Check Installation
-        run: kubectl get pods -n litmus
-      
+      - name: Extract Minikube IP and NodePort
+        id: extract-urls
+        run: |
+          MINIKUBE_IP=$(minikube ip)
+          NODE_PORT=$(kubectl get svc chaos-litmus-frontend-service -n litmus -o jsonpath='{.spec.ports[0].nodePort}')
+          echo "MINIKUBE_IP=$MINIKUBE_IP" >> $GITHUB_ENV
+          echo "NODE_PORT=$NODE_PORT" >> $GITHUB_ENV
+    
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cypress run with env
+        uses: cypress-io/github-action@v6
+        with:
+          start: npm start
+          working-directory: chaoscenter
+        env:
+          CYPRESS_baseUrl: http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
+
+      - name: Screenshot and video of failed tests[If any]
+        - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: cypress-screenshots
+          path: cypress/screenshots
+          if-no-files-found: ignore 
+
+        - uses: actions/upload-artifact@v4
+        with:
+          name: cypress-videos
+          path: cypress/videos
+          if-no-files-found: ignore
+          
 
   
       
