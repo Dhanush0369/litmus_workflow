@@ -8,7 +8,9 @@ describe('testing chaosinfra via UI', () => {
         cy.contains('Environments').click();
         cy.contains('New Environment').click();
         cy.get('input[name="name"]').type('exp1');
+        cy.intercept('POST','api/query').as('create');
         cy.contains('Save').click();
+        cy.wait('@create');
         
         //create chaosinfra
         cy.get('.TableV2--row').eq(0).click();
