@@ -69,22 +69,6 @@ jobs:
           working-directory: chaoscenter
         env:
           CYPRESS_baseUrl: http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
-
-      - name: Screenshot of failed tests[If any]
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-screenshots
-          path: cypress/screenshots
-          if-no-files-found: ignore 
-
-      - name: Video of failed tests[If any]
-        uses: actions/upload-artifact@v4
-        if: failure()
-        with:
-          name: cypress-videos
-          path: cypress/videos
-          if-no-files-found: ignore
           
 
   
