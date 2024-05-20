@@ -64,7 +64,7 @@ jobs:
         env:
           CYPRESS_baseUrl: http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
 
-      - name: Screenshot and video of failed tests[If any]
+      - name: Screenshot of failed tests[If any]
         uses: actions/upload-artifact@v4
         if: failure()
         with:
@@ -72,7 +72,9 @@ jobs:
           path: cypress/screenshots
           if-no-files-found: ignore 
 
+      - name: Video of failed tests[If any]
         uses: actions/upload-artifact@v4
+        if: failure()
         with:
           name: cypress-videos
           path: cypress/videos
