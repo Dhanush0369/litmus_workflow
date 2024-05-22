@@ -28,7 +28,7 @@ jobs:
             --set portal.frontend.service.type=NodePort
 
       - name: Wait for pods to be ready
-        run: run: |
+        run: |
           while [[ $(kubectl get pods -n litmus --no-headers | grep -v 'Running\|Completed' | wc -l) -gt 0 ]]; do
             echo "Waiting for pods to be ready..."
             kubectl get pods -n litmus
@@ -54,7 +54,3 @@ jobs:
           working-directory: chaoscenter
         env:
           CYPRESS_baseUrl: http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
-          
-
-  
-      
