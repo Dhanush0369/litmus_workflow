@@ -28,7 +28,13 @@ jobs:
             --set portal.frontend.service.type=NodePort
 
       - name: Wait for pods to be ready
-        run: sleep 75s
+        run: run: |
+          while [[ $(kubectl get pods -n litmus --no-headers | grep -v 'Running\|Completed' | wc -l) -gt 0 ]]; do
+            echo "Waiting for pods to be ready..."
+            kubectl get pods -n litmus
+            sleep 10
+          done
+          echo "All pods are ready!"
             
       - name: Extract Minikube IP and NodePort
         id: extract-urls
