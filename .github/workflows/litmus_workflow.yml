@@ -31,7 +31,7 @@ jobs:
         id: extract-urls
         run: |
           MINIKUBE_IP=$(minikube ip)
-          NODE_PORT=$(kubectl get svc chaos-litmus-frontend-service -n litmus -o jsonpath='{.spec.ports[0].nodePort}')
+          NODE_PORT=$(kubectl get svc litmusportal-frontend-service -n litmus -o jsonpath='{.spec.ports[0].nodePort}')
           echo "MINIKUBE_IP=$MINIKUBE_IP" >> $GITHUB_ENV
           echo "NODE_PORT=$NODE_PORT" >> $GITHUB_ENV
     
