@@ -44,13 +44,13 @@ jobs:
           ./litmus/install-portal.sh
         env:
           PORTAL_VERSION: ${{ env.TAG }}
-          CYPRESS_baseUrl: ${{ matrix.AccessType }}
+          ACCESS_TYPE: ${{ matrix.AccessType }}
           NAMESPACE: ${{ env.NS_MODE_NAMESPACE }}
           INSTALLATION_MODE: "NS-MODE"
           DEPLOY_SELF_AGENT: "false"
-          
-      - name: Checkout
-        uses: actions/checkout@v4
+
+      - name: Set Cypress baseUrl
+        run: echo "CYPRESS_baseUrl=${URL}" >> $GITHUB_ENV
 
       - name: Cypress run with env
         uses: cypress-io/github-action@v6
