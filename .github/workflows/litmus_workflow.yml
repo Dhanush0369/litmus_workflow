@@ -49,11 +49,10 @@ jobs:
           INSTALLATION_MODE: "NS-MODE"
           DEPLOY_SELF_AGENT: "false"
 
-      - name: Set Cypress baseUrl
-        run: echo "CYPRESS_baseUrl=${URL}" >> $GITHUB_ENV
-
       - name: Cypress run with env
         uses: cypress-io/github-action@v6
         with:
           start: npm start
           working-directory: chaoscenter
+        env:
+          CYPRESS_baseUrl: ${{ env.URL }}
