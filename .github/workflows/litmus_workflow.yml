@@ -18,7 +18,7 @@ jobs:
     env:
       TAG: "v3.7.0"  # Example tag, replace with appropriate value
       SELF_AGENT: "litmus-cluster"
-      NS_MODE_NAMESPACE: "litmus"
+      NS_MODE_NAMESPACE: "default"
     
     steps:
       - uses: actions/checkout@v2
