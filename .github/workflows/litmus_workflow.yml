@@ -16,7 +16,7 @@ jobs:
       matrix:
         AccessType: [Ingress, LoadBalancer]
     env:
-      TAG: "v3.7.0"  # Example tag, replace with appropriate value
+      TAG: "v3.6.0"  # Example tag, replace with appropriate value
       SELF_AGENT: "litmus-cluster"
       NS_MODE_NAMESPACE: "default"
     
