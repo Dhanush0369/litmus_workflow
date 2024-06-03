@@ -11,43 +11,41 @@ on:
 jobs:
   run-litmus:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        AccessType: [Ingress, LoadBalancer]
-    env:
-      TAG: "v3.0.0"  # Example tag, replace with appropriate value
-      SELF_AGENT: "litmus-cluster"
-      NS_MODE_NAMESPACE: "litmus"
+    steps: 
+      - name: Add litmus Chaos Repository
+        run: helm repo add litmuschaos https://litmuschaos.github.io/litmus-helm/
+
+      - name: Start minikube
+        run: minikube start
+
+      - name: Create litmus namespace
+        run: kubectl create ns litmus
+
+      - name: Install Litmus
+        run: |
+          helm install chaos litmuschaos/litmus \
+            --namespace=litmus \
+            --set portal.frontend.service.type=NodePort
+      - name: Wait for pods to be ready
+        run: |
+          sleep 30s
+          while [[ $(kubectl get pods -n litmus --no-headers | grep -v 'Running\|Completed' | wc -l) -gt 0 ]]; do
+            echo "Waiting for pods to be ready..."
+            kubectl get pods -n litmus
+            sleep 10
+          done
+          echo "All pods are ready!"
+            
+      - name: Extract Minikube IP and NodePort
+        id: extract-urls
+        run: |
+          MINIKUBE_IP=$(minikube ip)
+          NODE_PORT=$(kubectl get svc chaos-litmus-frontend-service -n litmus -o jsonpath='{.spec.ports[0].nodePort}')
+          echo "MINIKUBE_IP=$MINIKUBE_IP" >> $GITHUB_ENV
+          echo "NODE_PORT=$NODE_PORT" >> $GITHUB_ENV
     
-    steps:
-      - uses: actions/checkout@v2
-
-      - uses: AbsaOSS/k3d-action@v2
-        name: Create k8s Cluster
-        with:
-          cluster-name: ${{ env.SELF_AGENT }}
-          k3d-version: v5.2.2
-          args: >
-            --agents 3
-            --k3s-arg "--no-deploy=traefik, metrics-server@server:*"
-
-      - name: Configuring and Testing the Cluster Installation
-        run: |
-          kubectl cluster-info --context k3d-${{ env.SELF_AGENT }}
-          kubectl get nodes
-          kubectl get pods -n kube-system
-          
-      - name: Deploying Litmus-Portal using k8s-manifest
-        run: |
-          chmod 755 ./litmus/install-portal.sh
-          ./litmus/install-portal.sh
-        env:
-          PORTAL_VERSION: ${{ env.TAG }}
-          ACCESS_TYPE: ${{ matrix.AccessType }}
-          NAMESPACE: ${{ env.NS_MODE_NAMESPACE }}
-          INSTALLATION_MODE: "NS-MODE"
-          DEPLOY_SELF_AGENT: "false"
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Cypress run with env
         uses: cypress-io/github-action@v6
@@ -55,4 +53,4 @@ jobs:
           start: npm start
           working-directory: chaoscenter
         env:
-          CYPRESS_baseUrl: ${{ env.URL }}
+          CYPRESS_baseUrl: http://${{ env.MINIKUBE_IP }}:${{ env.NODE_PORT }}
